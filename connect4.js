@@ -1,11 +1,14 @@
 class Game {
   constructor(p1, p2, height = 6, width = 7) {
+    // creating a list for switch players
+    // we don't use let and const in the constructor for instance variables
     this.players = [p1, p2];
     this.HEIGHT = height;
     this.WIDTH = width;
     this.currPlayer = p1;
     this.makeBoard();
     this.makeHtmlBoard();
+    // to give the player the ability to click top row to drop pieces
     this.gameOver = false;
   }
 
@@ -13,7 +16,9 @@ class Game {
    *   board = array of rows, each row is array of cells  (board[y][x])
    */
   makeBoard() {
+    // we write this.board because the board variable is not created in this method but from other method, which is makeHtmlBoard()
     this.board = [];
+    // creating 2D nested lists of undefined (empty places => so later put the pieces in those places)
     for (let y = 0; y < this.HEIGHT; y++) {
       this.board.push(Array.from({ length: this.WIDTH }));
     }
@@ -23,6 +28,7 @@ class Game {
 
   makeHtmlBoard() {
     const board = document.getElementById('board');
+    // delete everything when we want to restart the game
     board.innerHTML = '';
 
     // make column tops (clickable area for adding a piece to that column)
@@ -49,6 +55,7 @@ class Game {
 
       for (let x = 0; x < this.WIDTH; x++) {
         const cell = document.createElement('td');
+        // we give them ids so later we can use those ids for assigning pieces
         cell.setAttribute('id', `${y}-${x}`);
         row.append(cell);
       }
@@ -60,6 +67,8 @@ class Game {
   /** findSpotForCol: given column x, return top empty y (null if filled) */
 
   findSpotForCol(x) {
+    // y-- because we are searching for empty places from the bottom to the top
+    // the bottoms row has higher y value then the upper rows
     for (let y = this.HEIGHT - 1; y >= 0; y--) {
       if (!this.board[y][x]) {
         return y;
@@ -85,6 +94,7 @@ class Game {
   endGame(msg) {
     alert(msg);
     const top = document.querySelector("#column-top");
+    // endGame => when removing the eventListener, nothing will happen when the player try click any cell of the first row
     top.removeEventListener("click", this.handleGameClick);
   }
 
@@ -92,6 +102,7 @@ class Game {
 
   handleClick(evt) {
     // get x from ID of clicked cell
+    // the plus symbol is used to convert the id value to a number
     const x = +evt.target.id;
 
     // get next spot in column (if none, ignore click)
@@ -111,6 +122,7 @@ class Game {
 
     // check for win
     if (this.checkForWin()) {
+      // disable the clicking event for the top row, so players can't continue to play
       this.gameOver = true;
       return this.endGame(`The ${this.currPlayer.color} player won!`);
     }
@@ -161,7 +173,9 @@ class Player {
 }
 
 document.getElementById('start-game').addEventListener('click', () => {
+  // the values of the input are the colors
   let p1 = new Player(document.getElementById('p1-color').value);
   let p2 = new Player(document.getElementById('p2-color').value);
+  // here we don't have to include the height and width because they're manually assigned in the Game class
   new Game(p1, p2);
 });
