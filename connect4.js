@@ -172,10 +172,29 @@ class Player {
   }
 }
 
+const validColor = function (strColor) {
+  // the new Option creates an option element solely for the purpose of accessing its 'style' property
+  let s = new Option().style;
+  s.color = strColor;
+  return s.color === strColor;
+}
+
+
 document.getElementById('start-game').addEventListener('click', () => {
   // the values of the input are the colors
   let p1 = new Player(document.getElementById('p1-color').value);
   let p2 = new Player(document.getElementById('p2-color').value);
+  // one of the color fields is empty 
+  if (p1.color === "" || p2.color === "") {
+    alert('The colors are missing!');
+    throw new Error("User forgot colors!");
+  }
+  // for invalid color names
+  if (!validColor(p1.color) || !validColor(p2.color)) {
+    alert('Invalid color names!');
+    throw new Error("Invalid color names!");
+  }
+
   // here we don't have to include the height and width because they're manually assigned in the Game class
   new Game(p1, p2);
 });
